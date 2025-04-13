@@ -1,13 +1,29 @@
-from PySide6.QtWidgets import QMainWindow, QStackedWidget
+from PySide6.QtWidgets import QMainWindow, QStackedWidget, QApplication
 from titlescreen import TitleScreen
-from gamescreen import GameScreen
-from menu_bar import setup_menuBar
+from menu_bar import setup_menuBar, GameScreen
 
 class MainWindow(QMainWindow):
     def __init__(self, app):
         super().__init__()
         self.setWindowTitle("DungeonCampaigner")
         self.app = app
+
+        screen = QApplication.primaryScreen()
+        screen_size = screen.size()
+        screen_width = screen_size.width()
+        screen_height = screen_size.height()
+
+        aspect_ratio = 16 / 9
+
+        window_width = int(screen_width * 0.8)  # For example, 80% of screen width
+        window_height = int(window_width / aspect_ratio)
+
+        self.resize(window_width, window_height)
+
+        self.move(
+            (screen_width - window_width) // 2,
+            (screen_height - window_height) // 2
+        )
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
