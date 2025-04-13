@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QGraphicsScene, QGraphicsView, QFileDialog, QWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QGraphicsScene, QGraphicsView, QFileDialog, QWidget, QTextEdit, QVBoxLayout, QHBoxLayout
 from PySide6.QtCore import QCoreApplication, QPoint
 from PySide6.QtGui import QPixmap, QWheelEvent
 
@@ -10,13 +10,22 @@ class GameScreen(QWidget):
         self.scene.setSceneRect(-1_000_000, -1_000_000, 2_000_000, 2_000_000) #Setting up infinite canvas space
         
         self.view = CustomGraphicsView(self.scene)
+        self.view.setMinimumWidth(500)
         #Settting up ability to drag image around and zoom in/out
         self.view.setDragMode(QGraphicsView.ScrollHandDrag)
         self.view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.view.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.view)
+        self.text_edit = QTextEdit()
+        self.text_edit.setMinimumWidth(200)
+
+        main_layout = QHBoxLayout(self)
+
+        view_layout = QVBoxLayout()
+        view_layout.addWidget(self.view)
+        
+        main_layout.addLayout(view_layout)  
+        main_layout.addWidget(self.text_edit) 
 
         # Panning variables
         self._pan_start = QPoint()
