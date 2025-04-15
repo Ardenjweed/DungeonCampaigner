@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QStackedWidget, QApplication
 from titlescreen import TitleScreen
-from menu_bar import setup_menuBar, GameScreen
+from gamescreen import setup_menuBar, GameScreen
 
 class MainWindow(QMainWindow):
     def __init__(self, app):
