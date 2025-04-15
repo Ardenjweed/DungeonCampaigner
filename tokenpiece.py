@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QLineEdit, QDialogButtonBox, QSizePolicy, QLabel, QSpacerItem, QTextEdit
+from PySide6.QtWidgets import QDialog, QLineEdit, QDialogButtonBox, QLabel, QTextEdit, QGridLayout
+from PySide6.QtCore import Qt
 
 class Token:
     def __init__(self):
@@ -19,52 +20,48 @@ class Token:
     def create_token(self):
         dialog = QDialog()
         dialog.setWindowTitle("Token Sheet")
+        dialog.setMinimumWidth(400)
 
-        main_layout = QVBoxLayout()
-
-        #PFP Label
-        row1_layout = QHBoxLayout()
+        main_layout = QGridLayout()
+        
+        # Row 0: Profile Picture Section
         pfp_label = QLabel("Profile Picture:")
-        row1_layout.addWidget(pfp_label)
-        main_layout.addLayout(row1_layout)
+        main_layout.addWidget(pfp_label, 0, 0, 1, 2)  
 
-        #PFP & Name/Description
-        row2_layout = QHBoxLayout()
-        pfp = QTextEdit() #placeholder for importing image
-        row2_layout.addWidget(pfp)
+        # Profile Picture (QTextEdit as placeholder)
+        pfp = QTextEdit()
+        pfp.setFixedSize(200, 200) 
+        main_layout.addWidget(pfp, 1, 0, 2, 2)  
 
+        # Row 1: Name and Description Field
         name_label = QLabel("Name:")
+        main_layout.addWidget(name_label, 1, 2)  
         name = QLineEdit()
-        row2_layout.addWidget(name_label)
-        row2_layout.addWidget(name)
-        main_layout.addLayout(row2_layout)
+        main_layout.addWidget(name, 1, 3)  
+
+        description_label = QLabel("Description:")
+        main_layout.addWidget(description_label, 2, 2)  
+        description = QLineEdit()
+        main_layout.addWidget(description, 2, 3)  
 
 
-        # Health/Initiative row
-        row3_layout = QHBoxLayout()
+        # Row 3: Health and Initiative
         hp_label = QLabel("Health Points:")
+        main_layout.addWidget(hp_label, 3, 0)
         hp_line = QLineEdit()
-        row3_layout.addWidget(hp_label)
-        row3_layout.addWidget(hp_line)
+        main_layout.addWidget(hp_line, 3, 1)
 
         initiative_label = QLabel("Initiative:")
+        main_layout.addWidget(initiative_label, 3, 2)
         initiative_line = QLineEdit()
-        row3_layout.addWidget(initiative_label)
-        row3_layout.addWidget(initiative_line)
-        main_layout.addLayout(row3_layout)
+        main_layout.addWidget(initiative_line, 3, 3)
 
-        # Button box setup
+        # Button row (row 4)
         button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(dialog.accept)
         button_box.rejected.connect(dialog.reject)
-        
-        # Center the buttons using a horizontal layout with spacers
-        button_layout = QHBoxLayout()
-        button_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        button_layout.addWidget(button_box)
-        button_layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        
-        main_layout.addLayout(button_layout)
+        main_layout.addWidget(button_box, 4, 0, 1, 4, alignment=Qt.AlignCenter)
+
         dialog.setLayout(main_layout)
         dialog.exec()
 
