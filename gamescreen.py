@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QWidget, QGraphicsScene, QGraphicsView, QFileDial
 from PySide6.QtCore import QCoreApplication, QPoint, Qt, QStandardPaths
 from PySide6.QtGui import QPixmap, QWheelEvent, QMouseEvent
 from draggablepixmap import DraggablePixmapItem
+from tokenpiece import Token
 
 class GameScreen(QWidget):
     def __init__(self):
@@ -57,7 +58,8 @@ class GameScreen(QWidget):
                 item.set_frozen(freeze)
 
     def create_token(self):
-        print("Creating a token here")
+        token = Token()
+        print("test")
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, scene):
