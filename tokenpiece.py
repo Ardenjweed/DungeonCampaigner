@@ -6,6 +6,8 @@ class Token:
     def __init__(self):
         self.profile = None
         self.name = ""
+        self.description = ""
+        self.notes = ""
         self.initiative = 0
         self.health = 0
         self.ac = 0
@@ -19,5 +21,9 @@ class Token:
         self.create_token()
 
     def create_token(self):
-        token_window = TokenCreation()
+        token_window = TokenCreation(self)
         token_window.exec()
+
+    def get_pfp(self):
+        return self.profile
+

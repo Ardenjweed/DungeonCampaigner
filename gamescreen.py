@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QWidget, QGraphicsScene, QGraphicsView, QFileDial
                                QTextEdit, QVBoxLayout, QHBoxLayout)
 from PySide6.QtCore import QCoreApplication, QPoint, Qt, QStandardPaths
 from PySide6.QtGui import QPixmap, QWheelEvent, QMouseEvent
-from draggablepixmap import DraggablePixmapItem
+from draggablepixmap import DraggablePixmapItem, DraggableToken
 from tokenpiece import Token
 
 class GameScreen(QWidget):
@@ -39,27 +39,40 @@ class GameScreen(QWidget):
         if dialog.exec():
             file_name = dialog.selectedFiles()
             if file_name:
-                self.add_image_to_scene(file_name[0])
+                self.add_image_to_scene(file_name[0], 0)
 
-    def add_image_to_scene(self, file_path):
+    def add_image_to_scene(self, file_path, typ):
         pixmap = QPixmap(file_path)
         if not pixmap.isNull():
-            pixmap_item = DraggablePixmapItem(pixmap)
+            pixmap_item = None
+            if typ == 0:
+                pixmap_item = DraggablePixmapItem(pixmap)
+                pixmap_item.setZValue(-1)
+            elif typ == 1:
+                pixmap_item = DraggableToken(pixmap)
+                pixmap_item.setZValue(1)
             self.scene.addItem(pixmap_item)
             scene_center = self.scene.sceneRect().center()
             item_center = pixmap_item.boundingRect().center()
             pixmap_item.setPos(scene_center - item_center)
             self.view.centerOn(scene_center)
 
-    def freeze_all_images(self, freeze=True):
-        """Toggle freeze state for all images"""
+    def freeze_all_maps(self, freeze=True):
+        """Toggle freeze state for all maps"""
         for item in self.scene.items():
             if isinstance(item, DraggablePixmapItem):
+                item.set_frozen(freeze)
+    
+    def freeze_all_tokens(self, freeze=True):
+        """Toggle freeze state for all tokens"""
+        for item in self.scene.items():
+            if isinstance(item, DraggableToken):
                 item.set_frozen(freeze)
 
     def create_token(self):
         token = Token()
-        print("test")
+        pfp = token.get_pfp()
+        self.add_image_to_scene(pfp, 1)
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, scene):
@@ -80,7 +93,7 @@ class CustomGraphicsView(QGraphicsView):
             item = self.itemAt(pos)
                 
             # Check if we clicked on a frozen item or no item
-            if (isinstance(item, DraggablePixmapItem) and item.frozen) or not item:
+            if (isinstance(item, (DraggablePixmapItem, DraggableToken)) and item.frozen) or not item:
                 self.setDragMode(QGraphicsView.ScrollHandDrag)
                 self._is_panning = True
             else:
@@ -112,7 +125,12 @@ def setup_menuBar(window):
     
     # New freeze menu
     freeze_menu = game_menu.addMenu("&Tools")
-    freeze_action = freeze_menu.addAction("Freeze All Backgrounds")
-    freeze_action.triggered.connect(lambda: window.game_screen.freeze_all_images(True))
-    unfreeze_action = freeze_menu.addAction("Unfreeze All Backgrounds")
-    unfreeze_action.triggered.connect(lambda: window.game_screen.freeze_all_images(False))
+    freeze_bg_action = freeze_menu.addAction("Freeze All Backgrounds")
+    freeze_bg_action.triggered.connect(lambda: window.game_screen.freeze_all_maps(True))
+    unfreeze_bg_action = freeze_menu.addAction("Unfreeze All Backgrounds")
+    unfreeze_bg_action.triggered.connect(lambda: window.game_screen.freeze_all_maps(False))
+
+    freeze_token_action = freeze_menu.addAction("Freeze All Tokens")
+    freeze_token_action.triggered.connect(lambda: window.game_screen.freeze_all_tokens(True))
+    unfreeze_token_action = freeze_menu.addAction("Unfreeze All Tokens")
+    unfreeze_token_action.triggered.connect(lambda: window.game_screen.freeze_all_tokens(False))
