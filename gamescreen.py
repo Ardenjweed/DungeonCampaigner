@@ -4,7 +4,6 @@ from PySide6.QtCore import QCoreApplication, QPoint, Qt, QStandardPaths
 from PySide6.QtGui import QPixmap, QWheelEvent, QMouseEvent
 from draggablepixmap import DraggablePixmapItem, DraggableToken
 from tokenpiece import Token
-#from option_list import options_list
 
 class GameScreen(QWidget):
     def __init__(self):
@@ -57,7 +56,7 @@ class GameScreen(QWidget):
         pixmap = QPixmap(file_path)
         if not pixmap.isNull():
             pixmap_item = DraggableToken(pixmap)
-            pixmap_item.setZValue(-1)
+            pixmap_item.setZValue(1)
             self.scene.addItem(pixmap_item)
             scene_center = self.scene.sceneRect().center()
             item_center = pixmap_item.boundingRect().center()

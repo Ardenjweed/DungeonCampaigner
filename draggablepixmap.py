@@ -69,7 +69,7 @@ class DraggableToken(QGraphicsPixmapItem):
         delete_act.triggered.connect(lambda: self.scene().removeItem(self))
         menu.addAction(delete_act)
 
-        #any other custom actions…
+        # edit action
         edit_act = QAction("Edit", menu)
         edit_act.triggered.connect(self.edit_stats)
         menu.addAction(edit_act)
