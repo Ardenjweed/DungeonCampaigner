@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QDialog, QFileDialog, QTextEdit, QMessageBox
 from PySide6.QtCore import QCoreApplication, QStandardPaths, QSize
 from PySide6.QtGui import QPixmap
-#from draggablepixmap import DraggablePixmapItem
 from ui_widget import Ui_Dialog
 
 
@@ -10,15 +9,37 @@ class TokenCreation(QDialog, Ui_Dialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Token Sheet")
-        icon = QPixmap("Assets/QuestionMark.jpg")
-        self.toolButton.setIcon(icon)
-        self.toolButton.setIconSize(QSize(200, 200))
         self.token = Token
-        self.token.profile = icon
+        if not getattr(self.token, 'profile', None):
+            default_icon = QPixmap("Assets/QuestionMark.jpg")
+            self.token.profile = default_icon
+            self.toolButton.setIconSize(QSize(200, 200))
+        self._load_token_into_form()
         self.toolButton.clicked.connect(self.set_pfp)
-        self.info = self.buttonBox.clicked.connect(self.save_token)
         self.buttonBox.accepted.disconnect()
         self.buttonBox.accepted.connect(self.accept)
+
+    def _load_token_into_form(self):
+        profile = self.token.profile
+        if isinstance(profile, str):
+            pix = QPixmap(profile)
+        elif isinstance(profile, QPixmap):
+            pix = profile
+        self.toolButton.setIcon(pix)
+        self.toolButton.setIconSize(QSize(200, 200))
+
+        self.name_textEdit.setPlainText(self.token.name)
+        self.desc_textEdit.setPlainText(self.token.description)
+        self.note_textEdit.setPlainText(self.token.notes)
+        self.init_textEdit.setPlainText(str(self.token.initiative))
+        self.hp_textEdit.setPlainText(str(self.token.health))
+        self.ac_textEdit.setPlainText(str(self.token.ac))
+        self.str_textEdit.setPlainText(str(self.token.strength))
+        self.dex_textEdit.setPlainText(str(self.token.dexterity))
+        self.con_textEdit.setPlainText(str(self.token.constitution))
+        self.int_textEdit.setPlainText(str(self.token.intelligence))
+        self.wis_textEdit.setPlainText(str(self.token.wisdom))
+        self.char_textEdit.setPlainText(str(self.token.charisma))
 
     def accept(self):
         edits = self.findChildren(QTextEdit)
@@ -33,8 +54,8 @@ class TokenCreation(QDialog, Ui_Dialog):
                 "Incomplete Sheet",
                 "Please fill in all fields before clicking OK."
             )
-            return   # don’t close the dialog
-        # if we get here, everything is filled in → save & close
+            return 
+        # if we get here, everything is filled in save & close
         self.save_token()       
         super().accept()
 

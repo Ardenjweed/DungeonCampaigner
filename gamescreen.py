@@ -4,6 +4,7 @@ from PySide6.QtCore import QCoreApplication, QPoint, Qt, QStandardPaths
 from PySide6.QtGui import QPixmap, QWheelEvent, QMouseEvent
 from draggablepixmap import DraggablePixmapItem, DraggableToken
 from tokenpiece import Token
+#from option_list import options_list
 
 class GameScreen(QWidget):
     def __init__(self):
@@ -39,18 +40,24 @@ class GameScreen(QWidget):
         if dialog.exec():
             file_name = dialog.selectedFiles()
             if file_name:
-                self.add_image_to_scene(file_name[0], 0)
+                self.add_image_to_scene(file_name[0])
 
-    def add_image_to_scene(self, file_path, typ):
+    def add_image_to_scene(self, file_path):
         pixmap = QPixmap(file_path)
         if not pixmap.isNull():
-            pixmap_item = None
-            if typ == 0:
-                pixmap_item = DraggablePixmapItem(pixmap)
-                pixmap_item.setZValue(-1)
-            elif typ == 1:
-                pixmap_item = DraggableToken(pixmap)
-                pixmap_item.setZValue(1)
+            pixmap_item = DraggablePixmapItem(pixmap)
+            pixmap_item.setZValue(-1)
+            self.scene.addItem(pixmap_item)
+            scene_center = self.scene.sceneRect().center()
+            item_center = pixmap_item.boundingRect().center()
+            pixmap_item.setPos(scene_center - item_center)
+            self.view.centerOn(scene_center)
+
+    def add_token_to_scene(self, file_path):
+        pixmap = QPixmap(file_path)
+        if not pixmap.isNull():
+            pixmap_item = DraggableToken(pixmap)
+            pixmap_item.setZValue(-1)
             self.scene.addItem(pixmap_item)
             scene_center = self.scene.sceneRect().center()
             item_center = pixmap_item.boundingRect().center()
@@ -72,7 +79,16 @@ class GameScreen(QWidget):
     def create_token(self):
         token = Token()
         pfp = token.get_pfp()
-        self.add_image_to_scene(pfp, 1)
+        pfp = QPixmap(pfp)
+
+        token_image = DraggableToken(pfp, token)
+        token_image.setZValue(1)
+
+        self.scene.addItem(token_image)
+        scene_center = self.scene.sceneRect().center()
+        item_center = token_image.boundingRect().center()
+        token_image.setPos(scene_center - item_center)
+        self.view.centerOn(scene_center)
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, scene):
@@ -100,6 +116,7 @@ class CustomGraphicsView(QGraphicsView):
                 self.setDragMode(QGraphicsView.NoDrag)
                 
             super().mousePressEvent(event)
+
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton and self._is_panning:
